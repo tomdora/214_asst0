@@ -1,31 +1,45 @@
 #include "tokenizer.h"
 
 Node * head = NULL;
-int currenetLoc = 0;
+int currentLoc = 0;
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 int isWord(char * input, int i){
-	while(currenetLoc < strlen(input)){
-		//printf("%c\n", input[currenetLoc]);
-		
-		if((ispunct(input[currenetLoc]) || isspace(input[currenetLoc])) && head == NULL){			//if head is null and program reaches a punctuation or space
-			//printf("No head, is punct or space\n");
+	while(currentLoc < strlen(input)){
+		//printf("%c\n", input[currentLoc]);
+		if(isspace(input[currentLoc]) && head == NULL){			//if head is null and program reaches a space
+			//printf("No head, is space\n");
 			
 			head = malloc(sizeof(Node));
-			head->data = malloc(currenetLoc-i);
+			head->data = malloc(currentLoc-i);
 			
-			strncpy(head->data, input + i, currenetLoc-i);
+			strncpy(head->data, input + i, currentLoc-i);
 			head->type = "word";
 			
-			i = currenetLoc+1;
-			currenetLoc++;
+			i = currentLoc+1;
+			currentLoc++;
 			
 			break;
 			
-		} else if(ispunct(input[currenetLoc]) || isspace(input[currenetLoc])){						//head is not null; if program finds a punctuation or a space
-			//printf("Found punct/space\n");
+		} else if(ispunct(input[currentLoc]) && head == NULL){				//if head is null and program reaches punctuation
+			//printf("No head, is punct\n");
+			
+			head = malloc(sizeof(Node));
+			head->data = malloc(currentLoc-i);
+			
+			strncpy(head->data, input + i, currentLoc-i);
+			head->type = "word";
+			
+			i = currentLoc;
+			
+			break;
+			
+		} else if(isspace(input[currentLoc])){						//head is not null; if program finds a space
+			//printf("Found space\n");
 			
 			Node * new = malloc(sizeof(Node));
-			new->data = malloc(currenetLoc-i);
+			new->data = malloc(currentLoc-i);
 			
 			Node * l = head;
 			while(l->next != NULL){
@@ -34,17 +48,19 @@ int isWord(char * input, int i){
 			
 			l->next = new;
 			
-			strncpy(new->data, input + i, currenetLoc-i);
+			strncpy(new->data, input + i, currentLoc-i);
 			new->type = "word";
 			
-			i = currenetLoc+1;
-			currenetLoc++;
+			i = currentLoc+1;
+			currentLoc++;
 			
 			break;
 			
-		} else if(currenetLoc == strlen(input) - 1){							//if the program reaches the end of the input string before finding a punctuation or a space
+		} else if(ispunct(input[currentLoc])){						//head is not null; if program finds punctuation
+			//printf("Found punct\n");
+			
 			Node * new = malloc(sizeof(Node));
-			new->data = malloc(currenetLoc-i);
+			new->data = malloc(currentLoc-i);
 			
 			Node * l = head;
 			while(l->next != NULL){
@@ -53,27 +69,103 @@ int isWord(char * input, int i){
 			
 			l->next = new;
 			
-			strncpy(new->data, input + i, currenetLoc-i+1);
+			strncpy(new->data, input + i, currentLoc-i);
+			new->type = "word";
+			
+			i = currentLoc;
+			
+			break;
+			
+		} else if(currentLoc == strlen(input) - 1){							//if the program reaches the end of the input string before finding a punctuation or a space
+			Node * new = malloc(sizeof(Node));
+			new->data = malloc(currentLoc-i);
+			
+			Node * l = head;
+			while(l->next != NULL){
+				l = l->next;
+			}
+			
+			l->next = new;
+			
+			strncpy(new->data, input + i, currentLoc-i+1);
 			new->type = "word";
 			
 			i = strlen(input);
 		}
 		
-		currenetLoc++;
+		currentLoc++;
 	}
-	
 	//printf("Returning\n");
 	return i;
 }
 
-int tokenType(char * input, int i){
-	if(isalpha(input[i])){
-		i = isWord(input, i);
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+int isPunctuation(char * input, int i){
+	if(input[i] == '+' && input[i+1] == '='){
+		Node * new = malloc(sizeof(Node));
+		new->data = malloc(2);
+		
+		Node * l = head;
+		while(l->next != NULL){
+			l = l->next;
+		}
+		
+		l->next = new;
+		
+		strncpy(new->data, input + i, 2);
+		new->type = "plusequals";
+		
+		currentLoc = currentLoc	+ 2;
+		i = currentLoc;
+	}
+	
+	if(ispunct(input[i])){
+		Node * new = malloc(sizeof(Node));
+		new->data = malloc(1);
+		
+		Node * l = head;
+		while(l->next != NULL){
+			l = l->next;
+		}
+		
+		l->next = new;
+		
+		strncpy(new->data, input + i, 1);
+		new->type = "punct";
+		
+		i = currentLoc+1;
+		currentLoc++;
 	}
 	
 	return i;
 }
 
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+//Function to determine what type of token is required and sends it to the proper function
+int tokenType(char * input, int i){
+	if(isspace(input[i])){
+		i++;
+		currentLoc++;
+	} else if(isalpha(input[i])){
+		i = isWord(input, i);
+	} else if(ispunct(input[i])){
+		i = isPunctuation(input, i);
+	}
+	
+	return i;
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+//Function to print the entire linked list
 void printList(){
 	if(head == NULL){ printf("Head is null.\n"); }
 	Node * l = head;
@@ -86,12 +178,23 @@ void printList(){
 
 
 
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+//Main function
 int main(int argc, char * argv[]){
 	//Node * head = NULL;
 	
+	//Check for exactly two arguments; one is not enough and more is too many
 	if(argc == 2){
 		int i = 0;
 		
+		//Tokenize the string input
 		while(i != strlen(argv[1])){
 			//printf("%d\n", i);
 			
