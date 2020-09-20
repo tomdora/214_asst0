@@ -5,92 +5,119 @@ int currentLoc = 0;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
+//Function to create a head node. Checks to see if the entire string is one single token first
+int createHeadNode(char * input, char * inputType, int i, int x){
+	//printf("No head.\n");
+	if(currentLoc == strlen(input) - 1){
+		//printf("Head is null and end of string. currentLoc = %d, strlen = %ld\n", currentLoc, strlen(input));
+		
+		head = malloc(sizeof(Node));
+		head-> data = malloc(currentLoc-i+1);
+		
+		strncpy(head->data, input + i, currentLoc-i+1);
+		head->type = inputType;
+		
+		i = strlen(input);
+	} else{
+		head = malloc(sizeof(Node));
+		head->data = malloc(currentLoc-i);
+		
+		strncpy(head->data, input + i, currentLoc-i);
+		head->type = inputType;
+		
+		currentLoc = currentLoc + x;
+		i = currentLoc;
+	}
+	
+	return i;
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+int createLastNode(char * input, char * inputType, int i){
+	Node * new = malloc(sizeof(Node));
+	new->data = malloc(currentLoc-i+1);
+	
+	Node * l = head;
+	while(l->next != NULL){
+		l = l->next;
+	}
+	
+	l->next = new;
+	
+	strncpy(new->data, input + i, currentLoc-i+1);
+	new->type = inputType;
+	
+	i = strlen(input);
+	
+	return i;
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+int createNewNode(char * input, char * inputType, int i, int x){
+	if(head == NULL){
+		printf("Head is null.\n");
+		i = createHeadNode(input, inputType, i, x);
+	} else if(currentLoc == strlen(input) - 1){
+		printf("End of string.\n");
+		i = createLastNode(input, inputType, i);
+	} 
+	
+	else{
+		Node * new = malloc(sizeof(Node));
+		new->data = malloc(currentLoc-i);
+		
+		Node * l = head;
+		while(l->next != NULL){
+			l = l->next;
+		}
+		
+		l->next = new;
+		
+		strncpy(new->data, input + i, currentLoc-i);
+		new->type = inputType;
+		
+		currentLoc += x;
+		i = currentLoc;
+	}
+	
+	return i;
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 int isWord(char * input, int i){
+	//printf("word\n");
 	while(currentLoc < strlen(input)){
 		//printf("%c\n", input[currentLoc]);
-		if(isspace(input[currentLoc]) && head == NULL){			//if head is null and program reaches a space
-			//printf("No head, is space\n");
-			
-			head = malloc(sizeof(Node));
-			head->data = malloc(currentLoc-i);
-			
-			strncpy(head->data, input + i, currentLoc-i);
-			head->type = "word";
-			
-			i = currentLoc+1;
-			currentLoc++;
-			
-			break;
-			
-		} else if(ispunct(input[currentLoc]) && head == NULL){				//if head is null and program reaches punctuation
-			//printf("No head, is punct\n");
-			
-			head = malloc(sizeof(Node));
-			head->data = malloc(currentLoc-i);
-			
-			strncpy(head->data, input + i, currentLoc-i);
-			head->type = "word";
-			
-			i = currentLoc;
-			
-			break;
-			
-		} else if(isspace(input[currentLoc])){						//head is not null; if program finds a space
+		if(isspace(input[currentLoc])){						//head is not null; if program finds a space
 			//printf("Found space\n");
 			
-			Node * new = malloc(sizeof(Node));
-			new->data = malloc(currentLoc-i);
-			
-			Node * l = head;
-			while(l->next != NULL){
-				l = l->next;
-			}
-			
-			l->next = new;
-			
-			strncpy(new->data, input + i, currentLoc-i);
-			new->type = "word";
-			
-			i = currentLoc+1;
-			currentLoc++;
+			i = createNewNode(input, "word", i, 1);
 			
 			break;
 			
 		} else if(ispunct(input[currentLoc])){						//head is not null; if program finds punctuation
 			//printf("Found punct\n");
 			
-			Node * new = malloc(sizeof(Node));
-			new->data = malloc(currentLoc-i);
-			
-			Node * l = head;
-			while(l->next != NULL){
-				l = l->next;
-			}
-			
-			l->next = new;
-			
-			strncpy(new->data, input + i, currentLoc-i);
-			new->type = "word";
-			
-			i = currentLoc;
+			i = createNewNode(input, "word", i, 0);
 			
 			break;
 			
-		} else if(currentLoc == strlen(input) - 1){							//if the program reaches the end of the input string before finding a punctuation or a space
-			Node * new = malloc(sizeof(Node));
-			new->data = malloc(currentLoc-i);
+		} else if(currentLoc == strlen(input) - 1){					//if the program reaches the end of the input string before finding a punctuation or a space
+			//printf("End of string.\n");
 			
-			Node * l = head;
-			while(l->next != NULL){
-				l = l->next;
-			}
+			i = createNewNode(input, "word", i, 0);
 			
-			l->next = new;
-			
-			strncpy(new->data, input + i, currentLoc-i+1);
-			new->type = "word";
-			
-			i = strlen(input);
+			break;
 		}
 		
 		currentLoc++;
@@ -105,38 +132,54 @@ int isWord(char * input, int i){
 
 int isPunctuation(char * input, int i){
 	if(input[i] == '+' && input[i+1] == '='){
-		Node * new = malloc(sizeof(Node));
-		new->data = malloc(2);
 		
-		Node * l = head;
-		while(l->next != NULL){
-			l = l->next;
-		}
+		currentLoc += 2;
+		i = createNewNode(input, "plusequals", i, 0);
 		
-		l->next = new;
-		
-		strncpy(new->data, input + i, 2);
-		new->type = "plusequals";
-		
-		currentLoc = currentLoc	+ 2;
-		i = currentLoc;
-	}
+	} 
 	
 	if(ispunct(input[i])){
-		Node * new = malloc(sizeof(Node));
-		new->data = malloc(1);
+		currentLoc += 1;
+		i = createNewNode(input, "punct", i, 0);
+	}
+	
+	return i;
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+int isFloat(char * input, int i){
+	while(currentLoc < strlen(input)){
 		
-		Node * l = head;
-		while(l->next != NULL){
-			l = l->next;
+	}
+	
+	return i;
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+int isHex(char * input, int i){
+	
+	
+	return i;
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+int isNumber(char * input, int i){
+	while(currentLoc < strlen(input)){
+		if(input[currentLoc] = '.' && isdigit(input[currentLoc + 1])){
+			printf("Float.");
+			
+			i = isFloat(input, i);
 		}
 		
-		l->next = new;
-		
-		strncpy(new->data, input + i, 1);
-		new->type = "punct";
-		
-		i = currentLoc+1;
 		currentLoc++;
 	}
 	
@@ -152,10 +195,18 @@ int tokenType(char * input, int i){
 	if(isspace(input[i])){
 		i++;
 		currentLoc++;
-	} else if(isalpha(input[i])){
+	} 
+	else if(isalpha(input[i])){
 		i = isWord(input, i);
-	} else if(ispunct(input[i])){
+	} 
+	else if(ispunct(input[i])){
 		i = isPunctuation(input, i);
+	} 
+	
+	else if(input[i] == '0' && input[i+1] == ('x' || 'X')){
+		i = isHex(input, i);
+	}else if(isdigit(input[i])){
+		i = isNumber(input, i);
 	}
 	
 	return i;
@@ -195,8 +246,8 @@ int main(int argc, char * argv[]){
 		int i = 0;
 		
 		//Tokenize the string input
-		while(i != strlen(argv[1])){
-			//printf("%d\n", i);
+		while(i < strlen(argv[1])){
+			//printf("i: %d\n", i);
 			
 			i = tokenType(argv[1], i);
 		}
