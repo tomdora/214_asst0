@@ -201,7 +201,7 @@ int main(int argc, char * argv[]){
 			i = tokenType(argv[1], i);
 		}
 		
-		printList(head);
+		printList();
 		
 	} else if(argc <= 1){
 		printf("There are no strings to tokenize.\n");
