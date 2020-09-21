@@ -1,13 +1,14 @@
 #include "tokenizer.h"
 
 Node * head = NULL;
+int startLoc = 0;
 int currentLoc = 0;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 //Function to create a head node. Checks to see if the entire string is one single token first.
-int createHeadNode(char * input, char * inputType, int i){
+void createHeadNode(char * input, char * inputType){
 	//printf("No head.\n");
 	
 	//createHeadNode checks to see if this is the only token
@@ -16,26 +17,26 @@ int createHeadNode(char * input, char * inputType, int i){
 		//printf("Head is null and end of string. currentLoc = %d, strlen = %ld\n", currentLoc, strlen(input));
 		
 		head = (Node*)malloc(sizeof(Node));
-		head-> data = (char*)malloc(currentLoc-i+1);
+		head-> data = (char*)malloc(currentLoc-startLoc+1);
 		
-		strncpy(head->data, input + i, currentLoc-i+1);
+		strncpy(head->data, input + startLoc, currentLoc-startLoc+1);
 		head->type = inputType;
 		
-		i = strlen(input);
+		startLoc = strlen(input);
 	}
 	
 	//Otherwise, it creates the head node and continues the program
 	else{
 		head = (Node*)malloc(sizeof(Node));
-		head->data = (char*)malloc(currentLoc-i);
+		head->data = (char*)malloc(currentLoc-startLoc);
 		
-		strncpy(head->data, input + i, currentLoc-i);
+		strncpy(head->data, input + startLoc, currentLoc-startLoc);
 		head->type = inputType;
 		
-		i = currentLoc;
+		startLoc = currentLoc;
 	}
 	
-	return i;
+	return;
 }
 
 
@@ -43,11 +44,11 @@ int createHeadNode(char * input, char * inputType, int i){
 
 
 //Function to create the last node.
-int createLastNode(char * input, char * inputType, int i){
+void createLastNode(char * input, char * inputType){
 	//Because createHeadNode already has code to handle being the only token
 	//createLastNode will check if the head is null and send the code over there.
 	if(head == NULL){
-		i = createHeadNode(input, inputType, i);
+		createHeadNode(input, inputType);
 	} 
 	
 	//Otherwise, we already have a head node and can fulfill the code here.
@@ -55,7 +56,7 @@ int createLastNode(char * input, char * inputType, int i){
 		//printf("Last node.\n");
 		
 		Node * new = (Node*)malloc(sizeof(Node));
-		new->data = (char*)malloc(currentLoc-i+1);
+		new->data = (char*)malloc(currentLoc-startLoc+1);
 		
 		Node * l = head;
 		while(l->next != NULL){
@@ -64,13 +65,13 @@ int createLastNode(char * input, char * inputType, int i){
 		
 		l->next = new;
 		
-		strncpy(new->data, input + i, currentLoc-i+1);
+		strncpy(new->data, input + startLoc, currentLoc-startLoc+1);
 		new->type = inputType;
 		
-		i = strlen(input);
+		startLoc = strlen(input);
 	}
 	
-	return i;
+	return;
 }
 
 
@@ -78,19 +79,19 @@ int createLastNode(char * input, char * inputType, int i){
 
 
 //Function to create a new node. Checks to see if the head exists first.
-int createNewNode(char * input, char * inputType, int i){
+void createNewNode(char * input, char * inputType){
 	//printf("i: %d, currentLoc: %d\n", i, currentLoc);
 	
 	//If no head exists, function passes to the function to create a head.
 	if(head == NULL){
 		printf("Head is null.\n");
-		i = createHeadNode(input, inputType, i);
+		createHeadNode(input, inputType);
 	} 
 	
 	//Else if a head exists, the code will run as normal to create a new node.
 	else{
 		Node * new = (Node*)malloc(sizeof(Node));
-		new->data = (char*)malloc(currentLoc-i);
+		new->data = (char*)malloc(currentLoc-startLoc);
 		
 		Node * l = head;
 		while(l->next != NULL){
@@ -99,13 +100,13 @@ int createNewNode(char * input, char * inputType, int i){
 		
 		l->next = new;
 		
-		strncpy(new->data, input + i, currentLoc-i);
+		strncpy(new->data, input + startLoc, currentLoc-startLoc);
 		new->type = inputType;
 		
-		i = currentLoc;
+		startLoc = currentLoc;
 	}
 	
-	return i;
+	return;
 }
 
 
@@ -113,14 +114,14 @@ int createNewNode(char * input, char * inputType, int i){
 
 
 //Function for creating a word. Due to the greedy nature of the algorithm, only needs a space or punctuation to terminate rather than any numbers.
-int isWord(char * input, int i){
+void isWord(char * input){
 	//printf("word\n");
 	while(currentLoc < strlen(input)){
-		printf("currentLoc: %d\n", currentLoc);
+		//printf("currentLoc: %d\n", currentLoc);
 		
 		//Check to see if the character is alphanumeric. 
 		if(!isalpha(input[currentLoc]) && !isdigit(input[currentLoc])){
-			i = createNewNode(input, "word", i);
+			createNewNode(input, "word");
 			
 			break;
 		}
@@ -129,7 +130,7 @@ int isWord(char * input, int i){
 		else if(currentLoc == strlen(input) - 1){
 			//printf("End of string.\n");
 			
-			i = createLastNode(input, "word", i);
+			createLastNode(input, "word");
 			
 			break;
 		}
@@ -137,7 +138,7 @@ int isWord(char * input, int i){
 		currentLoc++;
 	}
 	//printf("Returning\n");
-	return i;
+	return;
 }
 
 
@@ -146,31 +147,31 @@ int isWord(char * input, int i){
 
 //Function to test for punctuation.
 //Also tests to make sure it doesn't overflow the length of the string.
-int isPunctuation(char * input, int i){
-	if(currentLoc < strlen(input) && input[i] == '+' && input[i+1] == '='){		//checks for plusequals
+void isPunctuation(char * input){
+	if(currentLoc < strlen(input) && input[startLoc] == '+' && input[startLoc+1] == '='){		//checks for plusequals
 		
 		currentLoc += 2;
-		i = createNewNode(input, "plusequals", i);
+		createNewNode(input, "plusequals");
 	} 
 	
 	else{
 		currentLoc += 1;
-		i = createNewNode(input, "punct", i);
+		createNewNode(input, "punct");
 	}
 	
-	return i;
+	return;
 }
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-int isFloat(char * input, int i){
+void isFloat(char * input){
 	while(currentLoc < strlen(input)){
 		
 	}
 	
-	return i;
+	return;
 }
 
 
@@ -178,7 +179,7 @@ int isFloat(char * input, int i){
 
 
 //Function for a known hex token. Goes until it finds a non-hex character.
-int isHex(char * input, int i){
+void isHex(char * input){
 	printf("Hex.\n");
 	while(currentLoc < strlen(input)){
 		//printf("i: %d, currentLoc: %d\n", i, currentLoc);
@@ -187,7 +188,7 @@ int isHex(char * input, int i){
 		if(!isxdigit(input[currentLoc])){
 			printf("Non-hex found\n");
 			
-			i = createNewNode(input, "hex", i);
+			createNewNode(input, "hex");
 			
 			break;
 		}
@@ -196,7 +197,7 @@ int isHex(char * input, int i){
 		else if(currentLoc == strlen(input) - 1){
 			printf("End of string.\n");
 			
-			i = createLastNode(input, "hex", i);
+			createLastNode(input, "hex");
 			
 			break;
 		}
@@ -204,20 +205,20 @@ int isHex(char * input, int i){
 		currentLoc++;
 	}
 	
-	return i;
+	return;
 }
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-int isNumber(char * input, int i){
+void isNumber(char * input){
 	printf("Number.\n");
 	while(currentLoc < strlen(input)){
 		if(input[currentLoc] = '.' && isdigit(input[currentLoc + 1])){
 			printf("Float.");
 			
-			i = isFloat(input, i);
+			isFloat(input);
 			
 			break;
 		}
@@ -225,7 +226,7 @@ int isNumber(char * input, int i){
 		currentLoc++;
 	}
 	
-	return i;
+	return;
 }
 
 
@@ -233,26 +234,26 @@ int isNumber(char * input, int i){
 
 
 //Function to determine what type of token is required and sends it to the proper function
-int tokenType(char * input, int i){
-	if(isspace(input[i])){
-		i++;
+void tokenType(char * input){
+	if(isspace(input[startLoc])){
+		startLoc++;
 		currentLoc++;
 	} 
-	else if(isalpha(input[i])){
-		i = isWord(input, i);
+	else if(isalpha(input[startLoc])){
+		isWord(input);
 	} 
-	else if(ispunct(input[i])){
-		i = isPunctuation(input, i);
+	else if(ispunct(input[startLoc])){
+		isPunctuation(input);
 	} 
 	
-	else if(input[i] == '0' && input[i+1] == 'x' || 'X'){
+	else if(input[startLoc] == '0' && input[startLoc+1] == 'x' || 'X'){
 		currentLoc += 2;
-		i = isHex(input, i);
-	}else if(isdigit(input[i])){
-		i = isNumber(input, i);
+		isHex(input);
+	}else if(isdigit(input[startLoc])){
+		isNumber(input);
 	}
 	
-	return i;
+	return;
 }
 
 
@@ -271,9 +272,6 @@ void printList(){
 }
 
 
-
-
-
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -286,13 +284,11 @@ int main(int argc, char * argv[]){
 	
 	//Check for exactly two arguments; one is not enough and more is too many
 	if(argc == 2){
-		int i = 0;
-		
 		//Tokenize the string input
-		while(i < strlen(argv[1])){
+		while(startLoc < strlen(argv[1])){
 			//printf("i: %d, currentLoc: %d\n", i, currentLoc);
 			
-			i = tokenType(argv[1], i);
+			tokenType(argv[1]);
 		}
 		
 		printList();
