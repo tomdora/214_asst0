@@ -13,6 +13,7 @@ void createHeadNode(char * input, char * inputType){
 	
 	head = (Node*)malloc(sizeof(Node));
 	head->data = (char*)malloc(currentLoc-startLoc+1);
+	head->type = (char*)malloc(strlen(inputType));
 	
 	strncpy(head->data, input + startLoc, currentLoc-startLoc+1);
 	head->type = inputType;
@@ -41,6 +42,7 @@ void createNewNode(char * input, char * inputType){
 	else{
 		Node * new = (Node*)malloc(sizeof(Node));
 		new->data = (char*)malloc(currentLoc-startLoc+1);
+		new->type = (char*)malloc(strlen(inputType));
 		
 		Node * l = head;
 		while(l->next != NULL){
@@ -95,21 +97,176 @@ void isWord(char * input){
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-//Function to test for punctuation.
-//Also tests to make sure it doesn't overflow the length of the string.
+//Function to test for operators. 
 void isPunctuation(char * input){
-	if(currentLoc < strlen(input)-1 && input[startLoc] == '+' && input[startLoc+1] == '='){		//checks for plusequals
+	//All operators of size 3
+	if(currentLoc < strlen(input)-2 && input[startLoc] == '>' && input[startLoc+1] == '>' && input[startLoc+2] == '='){		
+		currentLoc++;
+		
+		createNewNode(input, "shift right equals");
+	} else if(currentLoc < strlen(input)-2 && input[startLoc] == '<' && input[startLoc+1] == '<' && input[startLoc+2] == '='){		
+		currentLoc++;
+		
+		createNewNode(input, "shift left equals");
+	} 
+	
+	
+	
+	//All operators of size 2
+	else if(currentLoc < strlen(input)-1 && input[startLoc] == '<' && input[startLoc+1] == '<'){		
+		currentLoc++;
+		
+		createNewNode(input, "shift left");
+	} else if(currentLoc < strlen(input)-1 && input[startLoc] == '>' && input[startLoc+1] == '>'){		
+		currentLoc++;
+		
+		createNewNode(input, "shift right");
+	} 
+	
+	else if(currentLoc < strlen(input)-1 && input[startLoc] == '+' && input[startLoc+1] == '='){		
 		currentLoc++;
 		
 		createNewNode(input, "plusequals");
-	} else if(currentLoc < strlen(input)-1 && input[startLoc] == '+' && input[startLoc+1] == '+'){		//checks for plusequals
+	} else if(currentLoc < strlen(input)-1 && input[startLoc] == '-' && input[startLoc+1] == '='){		
+		currentLoc++;
+		
+		createNewNode(input, "minusequals");
+	}
+	
+	else if(currentLoc < strlen(input)-1 && input[startLoc] == '<' && input[startLoc+1] == '='){		
+		currentLoc++;
+		
+		createNewNode(input, "less than or equal test");
+	} else if(currentLoc < strlen(input)-1 && input[startLoc] == '>' && input[startLoc+1] == '='){		
+		currentLoc++;
+		
+		createNewNode(input, "greater than or equal test");
+	}
+	
+	else if(currentLoc < strlen(input)-1 && input[startLoc] == '=' && input[startLoc+1] == '='){		
+		currentLoc++;
+		
+		createNewNode(input, "equality test");
+	} else if(currentLoc < strlen(input)-1 && input[startLoc] == '!' && input[startLoc+1] == '='){		
+		currentLoc++;
+		
+		createNewNode(input, "inequality test");
+	}
+	
+	else if(currentLoc < strlen(input)-1 && input[startLoc] == '*' && input[startLoc+1] == '='){		
+		currentLoc++;
+		
+		createNewNode(input, "times equals");
+	} else if(currentLoc < strlen(input)-1 && input[startLoc] == '/' && input[startLoc+1] == '='){		
+		currentLoc++;
+		
+		createNewNode(input, "divide equals");
+	} else if(currentLoc < strlen(input)-1 && input[startLoc] == '%' && input[startLoc+1] == '='){		
+		currentLoc++;
+		
+		createNewNode(input, "mod equals");
+	} else if(currentLoc < strlen(input)-1 && input[startLoc] == '&' && input[startLoc+1] == '='){		
+		currentLoc++;
+		
+		createNewNode(input, "bitwise AND equals");
+	} else if(currentLoc < strlen(input)-1 && input[startLoc] == '^' && input[startLoc+1] == '='){		
+		currentLoc++;
+		
+		createNewNode(input, "bitwise XOR equals");
+	} else if(currentLoc < strlen(input)-1 && input[startLoc] == '|' && input[startLoc+1] == '='){		
+		currentLoc++;
+		
+		createNewNode(input, "bitwise OR equals");
+	} 
+	
+	else if(currentLoc < strlen(input)-1 && input[startLoc] == '+' && input[startLoc+1] == '+'){		
 		currentLoc++;
 		
 		createNewNode(input, "increment");
+	} else if(currentLoc < strlen(input)-1 && input[startLoc] == '-' && input[startLoc+1] == '-'){		
+		currentLoc++;
+		
+		createNewNode(input, "decrement");
 	} 
 	
+	else if(currentLoc < strlen(input)-1 && input[startLoc] == '-' && input[startLoc+1] == '>'){		
+		currentLoc++;
+		
+		createNewNode(input, "structure pointer");
+	} 
+	
+	else if(currentLoc < strlen(input)-1 && input[startLoc] == '&' && input[startLoc+1] == '&'){		
+		currentLoc++;
+		
+		createNewNode(input, "logical AND");
+	} else if(currentLoc < strlen(input)-1 && input[startLoc] == '|' && input[startLoc+1] == '|'){		
+		currentLoc++;
+		
+		createNewNode(input, "logical OR");
+	} 
+	
+	
+	
+	//All operators of size 1
+	else if(input[startLoc] == '+'){	
+		createNewNode(input, "addition");
+	} else if(input[startLoc] == '-'){
+		createNewNode(input, "minus/subtract operator");
+	} else if(input[startLoc] == '*'){
+		createNewNode(input, "multiply/dereference operator");
+	} else if(input[startLoc] == '/'){
+		createNewNode(input, "division");
+	} 
+	
+	else if(input[startLoc] == '('){
+		createNewNode(input, "left parenthesis");
+	} else if(input[startLoc] == ')'){
+		createNewNode(input, "right parenthesis");
+	} else if(input[startLoc] == '['){
+		createNewNode(input, "left bracket");
+	} else if(input[startLoc] == ']'){
+		createNewNode(input, "right bracket");
+	} 
+	
+	else if(input[startLoc] == '.'){
+		createNewNode(input, "structure member");
+	} else if(input[startLoc] == ','){
+		createNewNode(input, "comma");
+	} 
+	
+	else if(input[startLoc] == '!'){
+		createNewNode(input, "negate");
+	} else if(input[startLoc] == '~'){
+		createNewNode(input, "is complement");
+	} else if(input[startLoc] == '^'){
+		createNewNode(input, "bitwise XOR");
+	} else if(input[startLoc] == '|'){
+		createNewNode(input, "bitwise OR");
+	} 
+	
+	else if(input[startLoc] == '?'){
+		createNewNode(input, "conditional true");
+	} else if(input[startLoc] == ':'){
+		createNewNode(input, "conditional false");
+	}
+	
+	else if(input[startLoc] == '<'){
+		createNewNode(input, "less than test");
+	} else if(input[startLoc] == '>'){
+		createNewNode(input, "greater than test");
+	} 
+	
+	else if(input[startLoc] == '='){
+		createNewNode(input, "assignment");
+	} else if(input[startLoc] == '&'){
+		createNewNode(input, "AND/address operator");
+	}
+	
+	
+	
+	//If all else fails, it's punctuation
 	else{
-		createNewNode(input, "punct");
+		createNewNode(input, "punctuation");
 	}
 	
 	return;
@@ -125,7 +282,7 @@ void isScien(char * input){
 	
 	while(currentLoc < strlen(input)){
 		if(currentLoc < strlen(input)-1 && !isdigit(input[currentLoc+1])){
-			createNewNode(input, "float");
+			createNewNode(input, "floating point");
 			
 			break;
 		}
@@ -134,7 +291,7 @@ void isScien(char * input){
 		else if(currentLoc == strlen(input) - 1){
 			//printf("End of string.\n");
 			
-			createNewNode(input, "float");
+			createNewNode(input, "floating point");
 			
 			break;
 		}
@@ -172,7 +329,7 @@ void isFloat(char * input){
 		
 		//Check for a non-numerical character
 		else if(currentLoc < strlen(input)-1 && !isdigit(input[currentLoc+1])){
-			createNewNode(input, "float");
+			createNewNode(input, "floating point");
 			
 			break;
 		}
@@ -181,7 +338,7 @@ void isFloat(char * input){
 		else if(currentLoc == strlen(input) - 1){
 			//printf("End of string.\n");
 			
-			createNewNode(input, "float");
+			createNewNode(input, "floating point");
 			
 			break;
 		}
@@ -211,7 +368,7 @@ void isDecimal(char * input){
 		}
 		
 		else if(currentLoc < strlen(input)-1 && !isdigit(input[currentLoc+1])){
-			createNewNode(input, "decimal");
+			createNewNode(input, "decimal integer");
 			
 			break;
 		}
@@ -220,7 +377,7 @@ void isDecimal(char * input){
 		else if(currentLoc == strlen(input) - 1){
 			//printf("End of string.\n");
 			
-			createNewNode(input, "decimal");
+			createNewNode(input, "decimal integer");
 			
 			break;
 		}
@@ -261,7 +418,7 @@ void isNumber(char * input){
 		else if(currentLoc < strlen(input)-1 && !isdigit(input[currentLoc+1])){
 			//printf("Octal.\n");
 			
-			createNewNode(input, "octal");
+			createNewNode(input, "octal integer");
 			
 			break;
 		}
@@ -270,7 +427,7 @@ void isNumber(char * input){
 		else if(currentLoc == strlen(input) - 1){
 			//printf("End of string.\n");
 			
-			createNewNode(input, "octal");
+			createNewNode(input, "octal integer");
 			
 			break;
 		}
@@ -295,7 +452,7 @@ void isHex(char * input){
 		if(currentLoc < strlen(input)-1 && !isxdigit(input[currentLoc+1])){
 			//printf("Non-hex found\n");
 			
-			createNewNode(input, "hex");
+			createNewNode(input, "hexadecimal integer");
 			
 			break;
 		}
@@ -304,7 +461,7 @@ void isHex(char * input){
 		else if(currentLoc == strlen(input) - 1){
 			//printf("End of string.\n");
 			
-			createNewNode(input, "hex");
+			createNewNode(input, "hexadecimal integer");
 			
 			break;
 		}
