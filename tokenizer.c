@@ -30,7 +30,7 @@ void createHeadNode(char * input, char * inputType){
 
 //Function to create a new node. Checks to see if the head exists first.
 void createNewNode(char * input, char * inputType){
-	//printf("i: %d, currentLoc: %d\n", i, currentLoc);
+	//printf("startLoc: %d, currentLoc: %d\n", startLoc, currentLoc);
 	
 	//If no head exists, function passes to the function to create a head.
 	if(head == NULL){
@@ -65,6 +65,87 @@ void createNewNode(char * input, char * inputType){
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
+//Function for testing specific words
+void isKeyword(char * input){
+	if(strncmp(input + startLoc, "sizeof", currentLoc-startLoc+1) == 0){
+		createNewNode(input, "sizeof");
+	}
+	else if(strncmp(input + startLoc, "auto", currentLoc-startLoc+1) == 0){
+		createNewNode(input, "auto");
+	} else if(strncmp(input + startLoc, "break", currentLoc-startLoc+1) == 0){
+		createNewNode(input, "break");
+	} else if(strncmp(input + startLoc, "case", currentLoc-startLoc+1) == 0){
+		createNewNode(input, "case");
+	} else if(strncmp(input + startLoc, "char", currentLoc-startLoc+1) == 0){
+		createNewNode(input, "char");
+	} else if(strncmp(input + startLoc, "const", currentLoc-startLoc+1) == 0){
+		createNewNode(input, "const");
+	} else if(strncmp(input + startLoc, "continue", currentLoc-startLoc+1) == 0){
+		createNewNode(input, "continue");
+	} else if(strncmp(input + startLoc, "default", currentLoc-startLoc+1) == 0){
+		createNewNode(input, "default");
+	} else if(strncmp(input + startLoc, "do", currentLoc-startLoc+1) == 0){
+		createNewNode(input, "do");
+	} else if(strncmp(input + startLoc, "double", currentLoc-startLoc+1) == 0){
+		createNewNode(input, "double");
+	} else if(strncmp(input + startLoc, "else", currentLoc-startLoc+1) == 0){
+		createNewNode(input, "else");
+	} else if(strncmp(input + startLoc, "enum", currentLoc-startLoc+1) == 0){
+		createNewNode(input, "enum");
+	} else if(strncmp(input + startLoc, "extern", currentLoc-startLoc+1) == 0){
+		createNewNode(input, "extern");
+	} else if(strncmp(input + startLoc, "float", currentLoc-startLoc+1) == 0){
+		createNewNode(input, "float");
+	} else if(strncmp(input + startLoc, "for", currentLoc-startLoc+1) == 0){
+		createNewNode(input, "for");
+	} else if(strncmp(input + startLoc, "goto", currentLoc-startLoc+1) == 0){
+		createNewNode(input, "goto");
+	} else if(strncmp(input + startLoc, "if", currentLoc-startLoc+1) == 0){
+		createNewNode(input, "if");
+	} else if(strncmp(input + startLoc, "int", currentLoc-startLoc+1) == 0){
+		createNewNode(input, "int");
+	} else if(strncmp(input + startLoc, "long", currentLoc-startLoc+1) == 0){
+		createNewNode(input, "long");
+	} else if(strncmp(input + startLoc, "register", currentLoc-startLoc+1) == 0){
+		createNewNode(input, "register");
+	} else if(strncmp(input + startLoc, "return", currentLoc-startLoc+1) == 0){
+		createNewNode(input, "return");
+	} else if(strncmp(input + startLoc, "short", currentLoc-startLoc+1) == 0){
+		createNewNode(input, "short");
+	} else if(strncmp(input + startLoc, "signed", currentLoc-startLoc+1) == 0){
+		createNewNode(input, "signed");
+	} else if(strncmp(input + startLoc, "sizeof", currentLoc-startLoc+1) == 0){
+		createNewNode(input, "sizeof");
+	} else if(strncmp(input + startLoc, "static", currentLoc-startLoc+1) == 0){
+		createNewNode(input, "static");
+	} else if(strncmp(input + startLoc, "struct", currentLoc-startLoc+1) == 0){
+		createNewNode(input, "struct");
+	} else if(strncmp(input + startLoc, "switch", currentLoc-startLoc+1) == 0){
+		createNewNode(input, "switch");
+	} else if(strncmp(input + startLoc, "typedef", currentLoc-startLoc+1) == 0){
+		createNewNode(input, "typedef");
+	} else if(strncmp(input + startLoc, "union", currentLoc-startLoc+1) == 0){
+		createNewNode(input, "union");
+	} else if(strncmp(input + startLoc, "unsigned", currentLoc-startLoc+1) == 0){
+		createNewNode(input, "unsigned");
+	} else if(strncmp(input + startLoc, "void", currentLoc-startLoc+1) == 0){
+		createNewNode(input, "void");
+	} else if(strncmp(input + startLoc, "volatile", currentLoc-startLoc+1) == 0){
+		createNewNode(input, "volatile");
+	} else if(strncmp(input + startLoc, "while", currentLoc-startLoc+1) == 0){
+		createNewNode(input, "while");
+	}
+	
+	//If it is none of these tokens, it is a word of its own
+	else{
+		createNewNode(input, "word");
+	}
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 //Function for creating a word. Due to the greedy nature of the algorithm, only needs a space or punctuation to terminate rather than any numbers.
 void isWord(char * input){
 	//printf("word\n");
@@ -73,7 +154,9 @@ void isWord(char * input){
 		
 		//Check to see if the character is alphanumeric. 
 		if(currentLoc < strlen(input)-1 && !isalpha(input[currentLoc+1]) && !isdigit(input[currentLoc+1])){
-			createNewNode(input, "word");
+			//createNewNode(input, "word");
+			
+			isKeyword(input);
 			
 			break;
 		}
@@ -82,7 +165,9 @@ void isWord(char * input){
 		else if(currentLoc == strlen(input) - 1){
 			//printf("End of string.\n");
 			
-			createNewNode(input, "word");
+			//createNewNode(input, "word");
+			
+			isKeyword(input);
 			
 			break;
 		}
@@ -97,14 +182,49 @@ void isWord(char * input){
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
+void isComment(char * input){
+	while(currentLoc < strlen(input)){
+		if(currentLoc < strlen(input)-1 && input[currentLoc] == '*' && input[currentLoc+1] == '/'){
+			currentLoc += 2;
+			startLoc = currentLoc;
+			
+			break;
+		}
+		
+		else if(currentLoc == strlen(input)-1){
+			currentLoc++;
+			startLoc = currentLoc;
+			
+			break;
+		}
+		
+		currentLoc++;
+	}
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 //Function to test for operators. 
 void isPunctuation(char * input){
+	//Check for comment before anything else
+	if(currentLoc < strlen(input)-1 && input[currentLoc] == '/' && input[currentLoc+1] == '*'){
+		currentLoc += 2;
+		isComment(input);
+	}
+	
+	else if(currentLoc < strlen(input)-1 && input[currentLoc] == '/' && input[currentLoc+1] == '/'){
+		currentLoc = strlen(input);
+		startLoc = currentLoc;
+	}
+	
 	//All operators of size 3
-	if(currentLoc < strlen(input)-2 && input[startLoc] == '>' && input[startLoc+1] == '>' && input[startLoc+2] == '='){		
+	else if(currentLoc < strlen(input)-2 && input[currentLoc] == '>' && input[currentLoc+1] == '>' && input[currentLoc+2] == '='){		
 		currentLoc++;
 		
 		createNewNode(input, "shift right equals");
-	} else if(currentLoc < strlen(input)-2 && input[startLoc] == '<' && input[startLoc+1] == '<' && input[startLoc+2] == '='){		
+	} else if(currentLoc < strlen(input)-2 && input[currentLoc] == '<' && input[currentLoc+1] == '<' && input[currentLoc+2] == '='){		
 		currentLoc++;
 		
 		createNewNode(input, "shift left equals");
@@ -113,93 +233,93 @@ void isPunctuation(char * input){
 	
 	
 	//All operators of size 2
-	else if(currentLoc < strlen(input)-1 && input[startLoc] == '<' && input[startLoc+1] == '<'){		
+	else if(currentLoc < strlen(input)-1 && input[currentLoc] == '<' && input[currentLoc+1] == '<'){		
 		currentLoc++;
 		
 		createNewNode(input, "shift left");
-	} else if(currentLoc < strlen(input)-1 && input[startLoc] == '>' && input[startLoc+1] == '>'){		
+	} else if(currentLoc < strlen(input)-1 && input[currentLoc] == '>' && input[currentLoc+1] == '>'){		
 		currentLoc++;
 		
 		createNewNode(input, "shift right");
 	} 
 	
-	else if(currentLoc < strlen(input)-1 && input[startLoc] == '+' && input[startLoc+1] == '='){		
+	else if(currentLoc < strlen(input)-1 && input[currentLoc] == '+' && input[currentLoc+1] == '='){		
 		currentLoc++;
 		
 		createNewNode(input, "plusequals");
-	} else if(currentLoc < strlen(input)-1 && input[startLoc] == '-' && input[startLoc+1] == '='){		
+	} else if(currentLoc < strlen(input)-1 && input[currentLoc] == '-' && input[currentLoc+1] == '='){		
 		currentLoc++;
 		
 		createNewNode(input, "minusequals");
 	}
 	
-	else if(currentLoc < strlen(input)-1 && input[startLoc] == '<' && input[startLoc+1] == '='){		
+	else if(currentLoc < strlen(input)-1 && input[currentLoc] == '<' && input[currentLoc+1] == '='){		
 		currentLoc++;
 		
 		createNewNode(input, "less than or equal test");
-	} else if(currentLoc < strlen(input)-1 && input[startLoc] == '>' && input[startLoc+1] == '='){		
+	} else if(currentLoc < strlen(input)-1 && input[currentLoc] == '>' && input[currentLoc+1] == '='){		
 		currentLoc++;
 		
 		createNewNode(input, "greater than or equal test");
 	}
 	
-	else if(currentLoc < strlen(input)-1 && input[startLoc] == '=' && input[startLoc+1] == '='){		
+	else if(currentLoc < strlen(input)-1 && input[currentLoc] == '=' && input[currentLoc+1] == '='){		
 		currentLoc++;
 		
 		createNewNode(input, "equality test");
-	} else if(currentLoc < strlen(input)-1 && input[startLoc] == '!' && input[startLoc+1] == '='){		
+	} else if(currentLoc < strlen(input)-1 && input[currentLoc] == '!' && input[currentLoc+1] == '='){		
 		currentLoc++;
 		
 		createNewNode(input, "inequality test");
 	}
 	
-	else if(currentLoc < strlen(input)-1 && input[startLoc] == '*' && input[startLoc+1] == '='){		
+	else if(currentLoc < strlen(input)-1 && input[currentLoc] == '*' && input[currentLoc+1] == '='){		
 		currentLoc++;
 		
 		createNewNode(input, "times equals");
-	} else if(currentLoc < strlen(input)-1 && input[startLoc] == '/' && input[startLoc+1] == '='){		
+	} else if(currentLoc < strlen(input)-1 && input[currentLoc] == '/' && input[currentLoc+1] == '='){		
 		currentLoc++;
 		
 		createNewNode(input, "divide equals");
-	} else if(currentLoc < strlen(input)-1 && input[startLoc] == '%' && input[startLoc+1] == '='){		
+	} else if(currentLoc < strlen(input)-1 && input[currentLoc] == '%' && input[currentLoc+1] == '='){		
 		currentLoc++;
 		
 		createNewNode(input, "mod equals");
-	} else if(currentLoc < strlen(input)-1 && input[startLoc] == '&' && input[startLoc+1] == '='){		
+	} else if(currentLoc < strlen(input)-1 && input[currentLoc] == '&' && input[currentLoc+1] == '='){		
 		currentLoc++;
 		
 		createNewNode(input, "bitwise AND equals");
-	} else if(currentLoc < strlen(input)-1 && input[startLoc] == '^' && input[startLoc+1] == '='){		
+	} else if(currentLoc < strlen(input)-1 && input[currentLoc] == '^' && input[currentLoc+1] == '='){		
 		currentLoc++;
 		
 		createNewNode(input, "bitwise XOR equals");
-	} else if(currentLoc < strlen(input)-1 && input[startLoc] == '|' && input[startLoc+1] == '='){		
+	} else if(currentLoc < strlen(input)-1 && input[currentLoc] == '|' && input[currentLoc+1] == '='){		
 		currentLoc++;
 		
 		createNewNode(input, "bitwise OR equals");
 	} 
 	
-	else if(currentLoc < strlen(input)-1 && input[startLoc] == '+' && input[startLoc+1] == '+'){		
+	else if(currentLoc < strlen(input)-1 && input[currentLoc] == '+' && input[currentLoc+1] == '+'){		
 		currentLoc++;
 		
 		createNewNode(input, "increment");
-	} else if(currentLoc < strlen(input)-1 && input[startLoc] == '-' && input[startLoc+1] == '-'){		
+	} else if(currentLoc < strlen(input)-1 && input[currentLoc] == '-' && input[currentLoc+1] == '-'){		
 		currentLoc++;
 		
 		createNewNode(input, "decrement");
 	} 
 	
-	else if(currentLoc < strlen(input)-1 && input[startLoc] == '-' && input[startLoc+1] == '>'){		
+	else if(currentLoc < strlen(input)-1 && input[currentLoc] == '-' && input[currentLoc+1] == '>'){		
 		currentLoc++;
 		
 		createNewNode(input, "structure pointer");
 	} 
 	
-	else if(currentLoc < strlen(input)-1 && input[startLoc] == '&' && input[startLoc+1] == '&'){		
+	else if(currentLoc < strlen(input)-1 && input[currentLoc] == '&' && input[currentLoc+1] == '&'){		
 		currentLoc++;
 		
 		createNewNode(input, "logical AND");
-	} else if(currentLoc < strlen(input)-1 && input[startLoc] == '|' && input[startLoc+1] == '|'){		
+	} else if(currentLoc < strlen(input)-1 && input[currentLoc] == '|' && input[currentLoc+1] == '|'){		
 		currentLoc++;
 		
 		createNewNode(input, "logical OR");
@@ -208,57 +328,61 @@ void isPunctuation(char * input){
 	
 	
 	//All operators of size 1
-	else if(input[startLoc] == '+'){	
+	else if(input[currentLoc] == '+'){	
 		createNewNode(input, "addition");
-	} else if(input[startLoc] == '-'){
+	} else if(input[currentLoc] == '-'){
 		createNewNode(input, "minus/subtract operator");
-	} else if(input[startLoc] == '*'){
+	} else if(input[currentLoc] == '*'){
 		createNewNode(input, "multiply/dereference operator");
-	} else if(input[startLoc] == '/'){
+	} else if(input[currentLoc] == '/'){
 		createNewNode(input, "division");
 	} 
 	
-	else if(input[startLoc] == '('){
+	else if(input[currentLoc] == '('){
 		createNewNode(input, "left parenthesis");
-	} else if(input[startLoc] == ')'){
+	} else if(input[currentLoc] == ')'){
 		createNewNode(input, "right parenthesis");
-	} else if(input[startLoc] == '['){
+	} else if(input[currentLoc] == '['){
 		createNewNode(input, "left bracket");
-	} else if(input[startLoc] == ']'){
+	} else if(input[currentLoc] == ']'){
 		createNewNode(input, "right bracket");
+	} else if(input[currentLoc] == '{'){
+		createNewNode(input, "left brace");
+	} else if(input[currentLoc] == '}'){
+		createNewNode(input, "right brace");
 	} 
 	
-	else if(input[startLoc] == '.'){
+	else if(input[currentLoc] == '.'){
 		createNewNode(input, "structure member");
-	} else if(input[startLoc] == ','){
+	} else if(input[currentLoc] == ','){
 		createNewNode(input, "comma");
 	} 
 	
-	else if(input[startLoc] == '!'){
+	else if(input[currentLoc] == '!'){
 		createNewNode(input, "negate");
-	} else if(input[startLoc] == '~'){
+	} else if(input[currentLoc] == '~'){
 		createNewNode(input, "is complement");
-	} else if(input[startLoc] == '^'){
+	} else if(input[currentLoc] == '^'){
 		createNewNode(input, "bitwise XOR");
-	} else if(input[startLoc] == '|'){
+	} else if(input[currentLoc] == '|'){
 		createNewNode(input, "bitwise OR");
 	} 
 	
-	else if(input[startLoc] == '?'){
+	else if(input[currentLoc] == '?'){
 		createNewNode(input, "conditional true");
-	} else if(input[startLoc] == ':'){
+	} else if(input[currentLoc] == ':'){
 		createNewNode(input, "conditional false");
 	}
 	
-	else if(input[startLoc] == '<'){
+	else if(input[currentLoc] == '<'){
 		createNewNode(input, "less than test");
-	} else if(input[startLoc] == '>'){
+	} else if(input[currentLoc] == '>'){
 		createNewNode(input, "greater than test");
 	} 
 	
-	else if(input[startLoc] == '='){
+	else if(input[currentLoc] == '='){
 		createNewNode(input, "assignment");
-	} else if(input[startLoc] == '&'){
+	} else if(input[currentLoc] == '&'){
 		createNewNode(input, "AND/address operator");
 	}
 	
@@ -478,25 +602,25 @@ void isHex(char * input){
 
 //Function to determine what type of token is required and sends it to the proper function
 void tokenType(char * input){
-	if(isspace(input[startLoc])){
+	if(isspace(input[currentLoc])){
 		startLoc++;
 		currentLoc++;
 	} 
-	else if(isalpha(input[startLoc])){
+	else if(isalpha(input[currentLoc])){
 		isWord(input);
 	} 
-	else if(ispunct(input[startLoc])){
+	else if(ispunct(input[currentLoc])){
 		isPunctuation(input);
 	} 
 	
-	else if(currentLoc < strlen(input)-1 && input[startLoc] == 48 && (input[startLoc+1] == 'x' || input[startLoc+1] == 'X')){
+	else if(currentLoc < strlen(input)-1 && input[currentLoc] == 48 && (input[currentLoc+1] == 'x' || input[currentLoc+1] == 'X')){
 		currentLoc += 2;
 		isHex(input);
 	}
-	else if(isdigit(input[startLoc]) && input[currentLoc] > '7' && input[currentLoc] <= '9'){
+	else if(isdigit(input[currentLoc]) && input[currentLoc] > '7' && input[currentLoc] <= '9'){
 		isDecimal(input);
 	}
-	else if(isdigit(input[startLoc])){
+	else if(isdigit(input[currentLoc])){
 		isNumber(input);
 	}
 	
