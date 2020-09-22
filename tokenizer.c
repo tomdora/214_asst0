@@ -152,6 +152,10 @@ void isPunctuation(char * input){
 		
 		currentLoc += 2;
 		createNewNode(input, "plusequals");
+	} else if(currentLoc < strlen(input)-1 && input[startLoc] == '+' && input[startLoc+1] == '+'){		//checks for plusequals
+		
+		currentLoc += 2;
+		createNewNode(input, "increment");
 	} 
 	
 	else{
@@ -201,7 +205,10 @@ void isFloat(char * input){
 	
 	while(currentLoc < strlen(input)){
 		//First check for scientific notation
-		if(currentLoc < strlen(input)-3 && input[currentLoc] == ('e' || 'E') && input[currentLoc+1] == ('-' || '+') && isdigit(input[currentLoc+2])){
+		//if(currentLoc < strlen(input)-3 && input[currentLoc] == ('e' || 'E') && input[currentLoc+1] == ('-' || '+') && isdigit(input[currentLoc+2])){
+		if(currentLoc < strlen(input)-2 && (input[currentLoc] == 'e' || input[currentLoc] == 'E') && (input[currentLoc+1] == '-' || input[currentLoc+1] == '+') && isdigit(input[currentLoc+2])){
+			currentLoc += 2;
+			
 			isScien(input);
 			
 			break;
@@ -366,7 +373,7 @@ void tokenType(char * input){
 		isPunctuation(input);
 	} 
 	
-	else if(currentLoc < strlen(input)-1 && input[startLoc] == 48 && (input[startLoc+1] == ('x' || 'X'))){
+	else if(currentLoc < strlen(input)-1 && input[startLoc] == 48 && (input[startLoc+1] == 'x' || input[startLoc+1] == 'X')){
 		currentLoc += 2;
 		isHex(input);
 	}else if(isdigit(input[startLoc])){
