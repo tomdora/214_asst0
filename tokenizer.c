@@ -11,65 +11,14 @@ int currentLoc = 0;			//current iteration location
 void createHeadNode(char * input, char * inputType){
 	//printf("No head.\n");
 	
-	//createHeadNode checks to see if this is the only token
-	//if true, it creates a head node that is also the last node
-	if(currentLoc == strlen(input) - 1){
-		//printf("Head is null and end of string. currentLoc = %d, strlen = %ld\n", currentLoc, strlen(input));
-		
-		head = (Node*)malloc(sizeof(Node));
-		head-> data = (char*)malloc(currentLoc-startLoc+1);
-		
-		strncpy(head->data, input + startLoc, currentLoc-startLoc+1);
-		head->type = inputType;
-		
-		startLoc = strlen(input);
-	}
+	head = (Node*)malloc(sizeof(Node));
+	head->data = (char*)malloc(currentLoc-startLoc+1);
 	
-	//Otherwise, it creates the head node and continues the program
-	else{
-		head = (Node*)malloc(sizeof(Node));
-		head->data = (char*)malloc(currentLoc-startLoc);
-		
-		strncpy(head->data, input + startLoc, currentLoc-startLoc);
-		head->type = inputType;
-		
-		startLoc = currentLoc;
-	}
+	strncpy(head->data, input + startLoc, currentLoc-startLoc+1);
+	head->type = inputType;
 	
-	return;
-}
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-//Function to create the last node.
-void createLastNode(char * input, char * inputType){
-	//Because createHeadNode already has code to handle being the only token
-	//createLastNode will check if the head is null and send the code over there.
-	if(head == NULL){
-		createHeadNode(input, inputType);
-	} 
-	
-	//Otherwise, we already have a head node and can fulfill the code here.
-	else{
-		//printf("Last node.\n");
-		
-		Node * new = (Node*)malloc(sizeof(Node));
-		new->data = (char*)malloc(currentLoc-startLoc+1);
-		
-		Node * l = head;
-		while(l->next != NULL){
-			l = l->next;
-		}
-		
-		l->next = new;
-		
-		strncpy(new->data, input + startLoc, currentLoc-startLoc+1);
-		new->type = inputType;
-		
-		startLoc = strlen(input);
-	}
+	currentLoc++;
+	startLoc = currentLoc;
 	
 	return;
 }
@@ -91,7 +40,7 @@ void createNewNode(char * input, char * inputType){
 	//Else if a head exists, the code will run as normal to create a new node.
 	else{
 		Node * new = (Node*)malloc(sizeof(Node));
-		new->data = (char*)malloc(currentLoc-startLoc);
+		new->data = (char*)malloc(currentLoc-startLoc+1);
 		
 		Node * l = head;
 		while(l->next != NULL){
@@ -100,9 +49,10 @@ void createNewNode(char * input, char * inputType){
 		
 		l->next = new;
 		
-		strncpy(new->data, input + startLoc, currentLoc-startLoc);
+		strncpy(new->data, input + startLoc, currentLoc-startLoc+1);
 		new->type = inputType;
 		
+		currentLoc++;
 		startLoc = currentLoc;
 	}
 	
@@ -120,7 +70,7 @@ void isWord(char * input){
 		//printf("currentLoc: %d\n", currentLoc);
 		
 		//Check to see if the character is alphanumeric. 
-		if(!isalpha(input[currentLoc]) && !isdigit(input[currentLoc])){
+		if(currentLoc < strlen(input)-1 && !isalpha(input[currentLoc+1]) && !isdigit(input[currentLoc+1])){
 			createNewNode(input, "word");
 			
 			break;
@@ -130,7 +80,7 @@ void isWord(char * input){
 		else if(currentLoc == strlen(input) - 1){
 			//printf("End of string.\n");
 			
-			createLastNode(input, "word");
+			createNewNode(input, "word");
 			
 			break;
 		}
@@ -149,17 +99,16 @@ void isWord(char * input){
 //Also tests to make sure it doesn't overflow the length of the string.
 void isPunctuation(char * input){
 	if(currentLoc < strlen(input)-1 && input[startLoc] == '+' && input[startLoc+1] == '='){		//checks for plusequals
+		currentLoc++;
 		
-		currentLoc += 2;
 		createNewNode(input, "plusequals");
 	} else if(currentLoc < strlen(input)-1 && input[startLoc] == '+' && input[startLoc+1] == '+'){		//checks for plusequals
+		currentLoc++;
 		
-		currentLoc += 2;
 		createNewNode(input, "increment");
 	} 
 	
 	else{
-		currentLoc += 1;
 		createNewNode(input, "punct");
 	}
 	
@@ -175,7 +124,7 @@ void isScien(char * input){
 	//printf("Scientific notation.\n");
 	
 	while(currentLoc < strlen(input)){
-		if(!isdigit(input[currentLoc])){
+		if(currentLoc < strlen(input)-1 && !isdigit(input[currentLoc+1])){
 			createNewNode(input, "float");
 			
 			break;
@@ -185,7 +134,7 @@ void isScien(char * input){
 		else if(currentLoc == strlen(input) - 1){
 			//printf("End of string.\n");
 			
-			createLastNode(input, "float");
+			createNewNode(input, "float");
 			
 			break;
 		}
@@ -205,8 +154,15 @@ void isFloat(char * input){
 	
 	while(currentLoc < strlen(input)){
 		//First check for scientific notation
-		//if(currentLoc < strlen(input)-3 && input[currentLoc] == ('e' || 'E') && input[currentLoc+1] == ('-' || '+') && isdigit(input[currentLoc+2])){
-		if(currentLoc < strlen(input)-2 && (input[currentLoc] == 'e' || input[currentLoc] == 'E') && (input[currentLoc+1] == '-' || input[currentLoc+1] == '+') && isdigit(input[currentLoc+2])){
+		if(currentLoc < strlen(input)-3 && (input[currentLoc+1] == 'e' || input[currentLoc+1] == 'E') && (input[currentLoc+2] == '-' || input[currentLoc+2] == '+') && isdigit(input[currentLoc+3])){
+			currentLoc += 3;
+			
+			isScien(input);
+			
+			break;
+		}
+		
+		else if(currentLoc < strlen(input)-2 && (input[currentLoc+1] == 'e' || input[currentLoc+1] == 'E') && isdigit(input[currentLoc+2])){
 			currentLoc += 2;
 			
 			isScien(input);
@@ -215,7 +171,7 @@ void isFloat(char * input){
 		}
 		
 		//Check for a non-numerical character
-		else if(!isdigit(input[currentLoc])){
+		else if(currentLoc < strlen(input)-1 && !isdigit(input[currentLoc+1])){
 			createNewNode(input, "float");
 			
 			break;
@@ -225,7 +181,7 @@ void isFloat(char * input){
 		else if(currentLoc == strlen(input) - 1){
 			//printf("End of string.\n");
 			
-			createLastNode(input, "float");
+			createNewNode(input, "float");
 			
 			break;
 		}
@@ -245,16 +201,16 @@ void isDecimal(char * input){
 	
 	while(currentLoc < strlen(input)){
 		//Check to see if the string is a float with a decimal point.
-		if(currentLoc < strlen(input)-1 && (input[currentLoc] == '.' && isdigit(input[currentLoc + 1]))){
+		if(currentLoc < strlen(input)-2 && (input[currentLoc+1] == '.' && isdigit(input[currentLoc + 2]))){
 			//If there exists a decimal point and a digit after, increment currentLoc and send to isFloat.
-			currentLoc += 2;
+			currentLoc++;
 			
 			isFloat(input);
 			
 			break;
 		}
 		
-		else if(!isdigit(input[currentLoc])){
+		else if(currentLoc < strlen(input)-1 && !isdigit(input[currentLoc+1])){
 			createNewNode(input, "decimal");
 			
 			break;
@@ -264,7 +220,7 @@ void isDecimal(char * input){
 		else if(currentLoc == strlen(input) - 1){
 			//printf("End of string.\n");
 			
-			createLastNode(input, "decimal");
+			createNewNode(input, "decimal");
 			
 			break;
 		}
@@ -284,22 +240,25 @@ void isNumber(char * input){
 	
 	while(currentLoc < strlen(input)){
 		//Check to see if the string is a float with a decimal point.
-		if(currentLoc < strlen(input)-1 && (input[currentLoc] == '.' && isdigit(input[currentLoc + 1]))){
+		if(currentLoc < strlen(input)-2 && (input[currentLoc+1] == '.' && isdigit(input[currentLoc + 2]))){
 			//If there exists a decimal point and a digit after, increment currentLoc and send to isFloat.
-			currentLoc += 2;
+			currentLoc++;
+			
 			isFloat(input);
 			
 			break;
 		}
 		
 		//else if(input[currentLoc] > 55 && input[currentLoc] < 58){
-		else if(input[currentLoc] > '7' && input[currentLoc] <= '9'){
+		else if(currentLoc < strlen(input)-1 && input[currentLoc+1] > '7' && input[currentLoc+1] <= '9'){
+			currentLoc++;
+			
 			isDecimal(input);
 			
 			break;
 		}
 		
-		else if(!isdigit(input[currentLoc])){
+		else if(currentLoc < strlen(input)-1 && !isdigit(input[currentLoc+1])){
 			//printf("Octal.\n");
 			
 			createNewNode(input, "octal");
@@ -311,7 +270,7 @@ void isNumber(char * input){
 		else if(currentLoc == strlen(input) - 1){
 			//printf("End of string.\n");
 			
-			createLastNode(input, "octal");
+			createNewNode(input, "octal");
 			
 			break;
 		}
@@ -333,7 +292,7 @@ void isHex(char * input){
 		//printf("i: %d, currentLoc: %d\n", i, currentLoc);
 		
 		//Checks for a non-hex character
-		if(!isxdigit(input[currentLoc])){
+		if(currentLoc < strlen(input)-1 && !isxdigit(input[currentLoc+1])){
 			//printf("Non-hex found\n");
 			
 			createNewNode(input, "hex");
@@ -345,7 +304,7 @@ void isHex(char * input){
 		else if(currentLoc == strlen(input) - 1){
 			//printf("End of string.\n");
 			
-			createLastNode(input, "hex");
+			createNewNode(input, "hex");
 			
 			break;
 		}
@@ -376,7 +335,11 @@ void tokenType(char * input){
 	else if(currentLoc < strlen(input)-1 && input[startLoc] == 48 && (input[startLoc+1] == 'x' || input[startLoc+1] == 'X')){
 		currentLoc += 2;
 		isHex(input);
-	}else if(isdigit(input[startLoc])){
+	}
+	else if(isdigit(input[startLoc]) && input[currentLoc] > '7' && input[currentLoc] <= '9'){
+		isDecimal(input);
+	}
+	else if(isdigit(input[startLoc])){
 		isNumber(input);
 	}
 	
