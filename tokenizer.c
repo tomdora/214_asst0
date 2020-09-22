@@ -1,8 +1,8 @@
 #include "tokenizer.h"
 
 Node * head = NULL;
-int startLoc = 0;
-int currentLoc = 0;
+int startLoc = 0;			//starting location
+int currentLoc = 0;			//current iteration location
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -177,6 +177,15 @@ void isScien(char * input){
 			break;
 		}
 		
+		//Check to see if we're at the end of the string, since the function won't automatically send the rest of the string.
+		else if(currentLoc == strlen(input) - 1){
+			//printf("End of string.\n");
+			
+			createLastNode(input, "float");
+			
+			break;
+		}
+		
 		currentLoc++;
 	}
 	
@@ -198,8 +207,18 @@ void isFloat(char * input){
 			break;
 		}
 		
+		//Check for a non-numerical character
 		else if(!isdigit(input[currentLoc])){
 			createNewNode(input, "float");
+			
+			break;
+		}
+		
+		//Check to see if we're at the end of the string, since the function won't automatically send the rest of the string.
+		else if(currentLoc == strlen(input) - 1){
+			//printf("End of string.\n");
+			
+			createLastNode(input, "float");
 			
 			break;
 		}
@@ -230,6 +249,15 @@ void isDecimal(char * input){
 		
 		else if(!isdigit(input[currentLoc])){
 			createNewNode(input, "decimal");
+			
+			break;
+		}
+		
+		//Check to see if we're at the end of the string, since the function won't automatically send the rest of the string.
+		else if(currentLoc == strlen(input) - 1){
+			//printf("End of string.\n");
+			
+			createLastNode(input, "decimal");
 			
 			break;
 		}
@@ -268,6 +296,15 @@ void isNumber(char * input){
 			//printf("Octal.\n");
 			
 			createNewNode(input, "octal");
+			
+			break;
+		}
+		
+		//Check to see if we're at the end of the string, since the function won't automatically send the rest of the string.
+		else if(currentLoc == strlen(input) - 1){
+			//printf("End of string.\n");
+			
+			createLastNode(input, "octal");
 			
 			break;
 		}
