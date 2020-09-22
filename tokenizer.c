@@ -84,7 +84,7 @@ void createNewNode(char * input, char * inputType){
 	
 	//If no head exists, function passes to the function to create a head.
 	if(head == NULL){
-		printf("Head is null.\n");
+		//printf("Head is null.\n");
 		createHeadNode(input, inputType);
 	} 
 	
@@ -148,7 +148,7 @@ void isWord(char * input){
 //Function to test for punctuation.
 //Also tests to make sure it doesn't overflow the length of the string.
 void isPunctuation(char * input){
-	if(currentLoc < strlen(input) && input[startLoc] == '+' && input[startLoc+1] == '='){		//checks for plusequals
+	if(currentLoc < strlen(input)-1 && input[startLoc] == '+' && input[startLoc+1] == '='){		//checks for plusequals
 		
 		currentLoc += 2;
 		createNewNode(input, "plusequals");
@@ -166,9 +166,18 @@ void isPunctuation(char * input){
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-void isFloat(char * input){
+//Helper function for isFloat for if a float also has scientific notation.
+void isScien(char * input){
+	//printf("Scientific notation.\n");
+	
 	while(currentLoc < strlen(input)){
+		if(!isdigit(input[currentLoc])){
+			createNewNode(input, "float");
+			
+			break;
+		}
 		
+		currentLoc++;
 	}
 	
 	return;
@@ -178,26 +187,49 @@ void isFloat(char * input){
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-//Function for a known hex token. Goes until it finds a non-hex character.
-void isHex(char * input){
-	printf("Hex.\n");
+void isFloat(char * input){
+	//printf("Float.\n");
+	
 	while(currentLoc < strlen(input)){
-		//printf("i: %d, currentLoc: %d\n", i, currentLoc);
-		
-		//Checks for a non-hex character
-		if(!isxdigit(input[currentLoc])){
-			printf("Non-hex found\n");
-			
-			createNewNode(input, "hex");
+		//First check for scientific notation
+		if(currentLoc < strlen(input)-3 && input[currentLoc] == ('e' || 'E') && input[currentLoc+1] == ('-' || '+') && isdigit(input[currentLoc+2])){
+			isScien(input);
 			
 			break;
 		}
 		
-		//Check to see if we're at the end of the string, since the function won't automatically send the rest of the string.
-		else if(currentLoc == strlen(input) - 1){
-			printf("End of string.\n");
+		else if(!isdigit(input[currentLoc])){
+			createNewNode(input, "float");
 			
-			createLastNode(input, "hex");
+			break;
+		}
+		
+		currentLoc++;
+	}
+	
+	return;
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+void isDecimal(char * input){
+	//printf("Decimal.\n");
+	
+	while(currentLoc < strlen(input)){
+		//Check to see if the string is a float with a decimal point.
+		if(currentLoc < strlen(input)-1 && (input[currentLoc] == '.' && isdigit(input[currentLoc + 1]))){
+			//If there exists a decimal point and a digit after, increment currentLoc and send to isFloat.
+			currentLoc += 2;
+			
+			isFloat(input);
+			
+			break;
+		}
+		
+		else if(!isdigit(input[currentLoc])){
+			createNewNode(input, "decimal");
 			
 			break;
 		}
@@ -213,12 +245,63 @@ void isHex(char * input){
 
 
 void isNumber(char * input){
-	printf("Number.\n");
+	//printf("Number.\n");
+	
 	while(currentLoc < strlen(input)){
-		if(input[currentLoc] = '.' && isdigit(input[currentLoc + 1])){
-			printf("Float.");
-			
+		//Check to see if the string is a float with a decimal point.
+		if(currentLoc < strlen(input)-1 && (input[currentLoc] == '.' && isdigit(input[currentLoc + 1]))){
+			//If there exists a decimal point and a digit after, increment currentLoc and send to isFloat.
+			currentLoc += 2;
 			isFloat(input);
+			
+			break;
+		}
+		
+		//else if(input[currentLoc] > 55 && input[currentLoc] < 58){
+		else if(input[currentLoc] > '7' && input[currentLoc] <= '9'){
+			isDecimal(input);
+			
+			break;
+		}
+		
+		else if(!isdigit(input[currentLoc])){
+			//printf("Octal.\n");
+			
+			createNewNode(input, "octal");
+			
+			break;
+		}
+		
+		currentLoc++;
+	}
+	
+	return;
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+//Function for a known hex token. Goes until it finds a non-hex character.
+void isHex(char * input){
+	//printf("Hex.\n");
+	while(currentLoc < strlen(input)){
+		//printf("i: %d, currentLoc: %d\n", i, currentLoc);
+		
+		//Checks for a non-hex character
+		if(!isxdigit(input[currentLoc])){
+			//printf("Non-hex found\n");
+			
+			createNewNode(input, "hex");
+			
+			break;
+		}
+		
+		//Check to see if we're at the end of the string, since the function won't automatically send the rest of the string.
+		else if(currentLoc == strlen(input) - 1){
+			//printf("End of string.\n");
+			
+			createLastNode(input, "hex");
 			
 			break;
 		}
@@ -246,7 +329,7 @@ void tokenType(char * input){
 		isPunctuation(input);
 	} 
 	
-	else if(input[startLoc] == '0' && input[startLoc+1] == 'x' || 'X'){
+	else if(currentLoc < strlen(input)-1 && input[startLoc] == 48 && (input[startLoc+1] == ('x' || 'X'))){
 		currentLoc += 2;
 		isHex(input);
 	}else if(isdigit(input[startLoc])){
