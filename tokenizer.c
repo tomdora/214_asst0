@@ -12,10 +12,10 @@ void createHeadNode(char * input, char * inputType){
 	//printf("No head.\n");
 	
 	head = (Node*)malloc(sizeof(Node));
-	head->data = (char*)malloc(currentLoc-startLoc+1);
-	head->type = (char*)malloc(strlen(inputType));
+	head->data = malloc(sizeof(char) * currentLoc-startLoc+2);
 	
 	strncpy(head->data, input + startLoc, currentLoc-startLoc+1);
+	head->data[currentLoc+1] = '\0';
 	head->type = inputType;
 	
 	currentLoc++;
@@ -40,9 +40,8 @@ void createNewNode(char * input, char * inputType){
 	
 	//Else if a head exists, the code will run as normal to create a new node.
 	else{
-		Node * new = (Node*)malloc(sizeof(Node));
-		new->data = (char*)malloc(currentLoc-startLoc+1);
-		new->type = (char*)malloc(strlen(inputType));
+		Node * new = malloc(sizeof(Node));
+		new->data = malloc(sizeof(char) * currentLoc-startLoc+2);
 		
 		Node * l = head;
 		while(l->next != NULL){
@@ -52,6 +51,7 @@ void createNewNode(char * input, char * inputType){
 		l->next = new;
 		
 		strncpy(new->data, input + startLoc, currentLoc-startLoc+1);
+		head->data[currentLoc+1] = '\0';
 		new->type = inputType;
 		
 		currentLoc++;
@@ -631,7 +631,7 @@ void tokenType(char * input){
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-//Function to print the entire linked list
+//Function to print the entire linked list.
 void printList(){
 	if(head == NULL){ printf("Head is null.\n"); }
 	Node * l = head;
@@ -640,6 +640,27 @@ void printList(){
 		
 		l = l->next;
 	}
+	
+	return;
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+//Function to free every element of the list.
+void freeList(){
+	Node * x;
+	
+	while(head != NULL){
+		x = head;
+		head = head->next;
+		
+		free(x->data);
+		free(x);
+	}
+	
+	return;
 }
 
 
@@ -663,6 +684,8 @@ int main(int argc, char * argv[]){
 		}
 		
 		printList();
+		
+		freeList();
 		
 	} else if(argc <= 1){
 		printf("There are no strings to tokenize.\n");
