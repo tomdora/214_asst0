@@ -15,14 +15,13 @@ Node* createNewNode(char * input, char * inputType, Node * head){
 	if(head == NULL){
 		//printf("Head is null.\n");
 		
+		//Malloc the head for the size of a Node struct, calloc enough space for the string + 1 for null terminator at the end of the string
 		head = malloc(sizeof(Node));
-		head->data = malloc(sizeof(char) * (currentLoc - startLoc + 2));
+		head->data = calloc((currentLoc - startLoc + 2), sizeof(char));
 		
+		//Copy data over to the head and set the type
 		strncpy(head->data, input + startLoc, currentLoc-startLoc+1);
-		head->data[currentLoc - startLoc+1] = '\0';
 		head->type = inputType;
-		
-		//printf("Head node address: %p\n", head);
 		
 		currentLoc++;
 		startLoc = currentLoc;
@@ -30,18 +29,21 @@ Node* createNewNode(char * input, char * inputType, Node * head){
 	
 	//Else if a head exists, the code will run as normal to create a new node.
 	else{
+		//Malloc the head for the size of a Node struct, calloc enough space for the string + 1 for null terminator at the end of the string
 		Node * new = malloc(sizeof(Node));
-		new->data = malloc(sizeof(char) * currentLoc-startLoc+2);
+		new->data = calloc((currentLoc - startLoc + 2), sizeof(char));
 		
+		//Iterate pointer "l" until we get to the end of the list
 		Node * l = head;
 		while(l->next != NULL){
 			l = l->next;
 		}
 		
+		//Make the last element's pointer point to the address of the new Node struct
 		l->next = new;
 		
+		//Copy data over to the head and set the type
 		strncpy(new->data, input + startLoc, currentLoc-startLoc+1);
-		new->data[currentLoc - startLoc+1] = '\0';
 		new->type = inputType;
 		
 		currentLoc++;
@@ -784,8 +786,8 @@ Node* tokenize(char * input){
 			head = isPunctuation(input, head);
 		} 
 		
-		else if(currentLoc < strlen(input)-1 && input[currentLoc] == 48 && (input[currentLoc+1] == 'x' || input[currentLoc+1] == 'X')){
-			currentLoc += 2;
+		else if(currentLoc < strlen(input)-1 && input[currentLoc] == '0' && (input[currentLoc+1] == 'x' || input[currentLoc+1] == 'X')){
+			currentLoc++;
 			head = isHex(input, head);
 		}
 		else if(isdigit(input[currentLoc]) && input[currentLoc] > '7' && input[currentLoc] <= '9'){
