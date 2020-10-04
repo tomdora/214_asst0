@@ -562,11 +562,13 @@ Node* isScien(char * input, Node * head){
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
+//If a token has a period AND a number afterwards, it's a float and passed here.
+//This function checks for scientific notation, or the end of the token.
 Node* isFloat(char * input, Node * head){
 	//printf("Float.\n");
 	
 	while(currentLoc < strlen(input)){
-		//First check for scientific notation
+		//First check for scientific notation with signs
 		if(currentLoc < strlen(input)-3 && (input[currentLoc+1] == 'e' || input[currentLoc+1] == 'E') && (input[currentLoc+2] == '-' || input[currentLoc+2] == '+') && isdigit(input[currentLoc+3])){
 			currentLoc += 3;
 			
@@ -575,6 +577,7 @@ Node* isFloat(char * input, Node * head){
 			break;
 		}
 		
+		//Checks for scientific notation without any signs
 		else if(currentLoc < strlen(input)-2 && (input[currentLoc+1] == 'e' || input[currentLoc+1] == 'E') && isdigit(input[currentLoc+2])){
 			currentLoc += 2;
 			
@@ -623,6 +626,7 @@ Node* isDecimal(char * input, Node * head){
 			break;
 		}
 		
+		//If it's not a float, it's a decimal
 		else if(currentLoc < strlen(input)-1 && !isdigit(input[currentLoc+1])){
 			head = createNewNode(input, "decimal integer", head);
 			
@@ -648,7 +652,8 @@ Node* isDecimal(char * input, Node * head){
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-Node* isNumber(char * input, Node * head){
+//If a token starts with a 0, there exists the possibility it's an octal. Function checks to see if it the token is instead a float or decimal
+Node* isOctal(char * input, Node * head){
 	//printf("Number at %d\n", currentLoc);
 	
 	while(currentLoc < strlen(input)){
@@ -662,7 +667,7 @@ Node* isNumber(char * input, Node * head){
 			break;
 		}
 		
-		//else if(input[currentLoc] > 55 && input[currentLoc] < 58){
+		//Also checks to see if the string is a decimal, with a number too large for an octal.
 		else if(currentLoc < strlen(input)-1 && input[currentLoc+1] > '7' && input[currentLoc+1] <= '9'){
 			currentLoc++;
 			
@@ -770,7 +775,7 @@ void freeTokens(Node * head){
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-//Function creates a head Node and starts
+//Function creates a head Node and starts iterating through the characters, detecting character types and sending the input to the function for the most likely token
 Node* tokenize(char * input){
 	Node * head = NULL;
 	
@@ -790,11 +795,11 @@ Node* tokenize(char * input){
 			currentLoc++;
 			head = isHex(input, head);
 		}
-		else if(isdigit(input[currentLoc]) && input[currentLoc] > '7' && input[currentLoc] <= '9'){
-			head = isDecimal(input, head);
+		else if(isdigit(input[currentLoc]) && input[currentLoc] == '0'){
+			head = isOctal(input, head);
 		}
 		else if(isdigit(input[currentLoc])){
-			head = isNumber(input, head);
+			head = isDecimal(input, head);
 		}
 		//If none of these conditions are satisfied, somehow, the code is broken and NULL is returned
 		else{
@@ -812,7 +817,7 @@ Node* tokenize(char * input){
 
 
 
-//Main function
+//Main function. Takes argv[1] and sends it to tokenize()
 int main(int argc, char * argv[]){
 	//Check for exactly two arguments; one is not enough and more is too many
 	if(argc == 2){
