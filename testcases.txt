@@ -182,19 +182,49 @@ bitwise OR equals "|="
 bitwise OR equals "|="
 times equals "*="
 ------------------------------------------------------------------------------------------------------------------------------------
+>test: ./tokenizer " ?:,<==>=<%=&==^=|=!=&=**=*"
+>expected result: 
+conditional true "?"
+conditional false ":"
+comma ","
+less than or equal test "<="
+assignment "="
+greater than or equal test ">="
+less than test "<"
+mod equals "%="
+bitwise AND equals "&="
+assignment "="
+bitwise XOR equals "^="
+bitwise OR equals "|="
+inequality test "!="
+bitwise AND equals "&="
+multiply/dereference operator "*"
+times equals "*="
+multiply/dereference operator "*"
+------------------------------------------------------------------------------------------------------------------------------------
+>test: ./tokenizer "~sizeof-->[(?\|||)]"
+>expected result: is complement "~"
+sizeof "sizeof"
+decrement "--"
+greater than test ">"
+left bracket "["
+left parenthesis "("
+conditional true "?"
+punctuation "\"
+logical OR "||"
+bitwise OR "|"
+right parenthesis ")"
+right bracket "]"
+------------------------------------------------------------------------------------------------------------------------------------
+>test: ./tokenizer "                                "                                                                        
+>expected result:
+Head is null.
+------------------------------------------------------------------------------------------------------------------------------------
 >test: ./tokenizer 
 >expected result: 
+There are no strings to tokenize
 ------------------------------------------------------------------------------------------------------------------------------------
->test: 
->expected result: 
-------------------------------------------------------------------------------------------------------------------------------------
->test: 
->expected result: 
-------------------------------------------------------------------------------------------------------------------------------------
->test: 
->expected result: 
-------------------------------------------------------------------------------------------------------------------------------------
->test: 
+>test: ./tokenizer 
 >expected result: 
 ------------------------------------------------------------------------------------------------------------------------------------
 >test: 
