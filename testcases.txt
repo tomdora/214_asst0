@@ -1,0 +1,204 @@
+>test: ./tokenizer "beep boop"
+>expected result: 
+word "beep"
+word "boop"
+------------------------------------------------------------------------------------------------------------------------------------
+>test: ./tokenizer "0x4356abdc 0777 [] "
+>expected result: 
+hexadecimal integer: "0x4356abdc"
+octal integer: "0777"
+left bracket: "["
+right bracket: "]"
+------------------------------------------------------------------------------------------------------------------------------------
+>test: ./tokenizer "int main(int argc, char * argv[]){ printf(\"Hello there.\n\"); }"
+>expected result: 
+int "int"
+word "main"
+left parenthesis "("
+int "int"
+word "argc"
+comma ","
+char "char"
+multiply/dereference operator "*"
+word "argv"
+left bracket "["
+right bracket "]"
+right parenthesis ")"
+left brace "{"
+word "printf"
+left parenthesis "("
+string ""Hello there.\n""
+right parenthesis ")"
+punctuation ";"
+right brace "}"
+------------------------------------------------------------------------------------------------------------------------------------
+>test: ./tokenizer "Beep boop \"hello there\""
+>expected result: 
+word "Beep"
+word "boop"
+string ""hello there""
+------------------------------------------------------------------------------------------------------------------------------------
+>test: ./tokenizer "Beep boop "hello there""
+>expected result: 
+There are too many strings to tokenize.
+------------------------------------------------------------------------------------------------------------------------------------
+>test: ./tokenizer "g fds lfsmd dsfn ksdfnkjd snfksfndksf nskdfn kdsfk dferrfjk"
+>expected result: 
+word "g"
+word "fds"
+word "lfsmd"
+word "dsfn"
+word "ksdfnkjd"
+word "snfksfndksf"
+word "nskdfn"
+word "kdsfk"
+word "dferrfjk"
+------------------------------------------------------------------------------------------------------------------------------------
+>test: ./tokenizer "0123456789 123456789 123456789"
+>expected result: 
+decimal integer "0123456789"
+decimal integer "123456789"
+decimal integer "123456789"
+------------------------------------------------------------------------------------------------------------------------------------
+>test: ./tokenizer "0123456789:123456789:123456789"
+>expected result: 
+decimal integer "0123456789"
+conditional false ":"
+decimal integer "123456789"
+conditional false ":"
+decimal integer "123456789"
+------------------------------------------------------------------------------------------------------------------------------------
+>test: ./tokenizer "0123456789.123456789.123456789"
+>expected result: 
+floating point "0123456789.123456789"
+structure member "."
+decimal integer "123456789"
+------------------------------------------------------------------------------------------------------------------------------------
+>test: ./tokenizer "Beeo biio sizeof. ofndskjnf r45 jri5i. tmgdf 5.4.5.5 3.151e10."
+>expected result: 
+word "Beeo"
+word "biio"
+sizeof "sizeof"
+structure member "."
+word "ofndskjnf"
+word "r45"
+word "jri5i"
+structure member "."
+word "tmgdf"
+floating point "5.4"
+structure member "."
+floating point "5.5"
+floating point "3.151e10"
+structure member "."
+------------------------------------------------------------------------------------------------------------------------------------
+>test: ./tokenizer "array[xyz ] += pt 3.14159e-10"
+>expected result: 
+word "array"
+left bracket "["
+word "xyz"
+right bracket "]"
+plusequals "+="
+word "pt"
+floating point "3.14159e-10"
+------------------------------------------------------------------------------------------------------------------------------------
+>test: ./tokenizer "numbers 972 0x972 A8 0XA8 XA8 0972 072" 
+>expected result: 
+word "numbers"
+decimal integer "972"
+hexadecimal integer "0x972"
+word "A8"
+hexadecimal integer "0XA8"
+word "XA8"
+decimal integer "0972"
+octal integer "072"
+------------------------------------------------------------------------------------------------------------------------------------
+>test: ./tokenizer "3.1 03.1 x3.1 0x3.1 30x1.x"
+>expected result: 
+floating point "3.1"
+floating point "03.1"
+word "x3"
+structure member "."
+octal integer "1"
+hexadecimal integer "0x3"
+structure member "."
+octal integer "1"
+octal integer "30"
+word "x1"
+structure member "."
+word "x"
+------------------------------------------------------------------------------------------------------------------------------------
+>test: ./tokenizer "+,++,+++,++++,+++++,++=,+++=="
+>expected result: 
+addition "+"
+comma ","
+increment "++"
+comma ","
+increment "++"
+addition "+"
+comma ","
+increment "++"
+increment "++"
+comma ","
+increment "++"
+increment "++"
+addition "+"
+comma ","
+increment "++"
+assignment "="
+comma ","
+increment "++"
+plusequals "+="
+assignment "="
+------------------------------------------------------------------------------------------------------------------------------------
+>test: ./tokenizer " ->,->>><<<><<><>"
+>expected result: 
+structure pointer "->"
+comma ","
+structure pointer "->"
+shift right ">>"
+shift left "<<"
+less than test "<"
+greater than test ">"
+shift left "<<"
+greater than test ">"
+less than test "<"
+greater than test ">"
+------------------------------------------------------------------------------------------------------------------------------------
+>test: ./tokenizer "^|-_+^^+^==!= , |=|=*="
+>expected result: 
+bitwise XOR "^"
+bitwise OR "|"
+minus/subtract operator "-"
+punctuation "_"
+addition "+"
+bitwise XOR "^"
+bitwise XOR "^"
+addition "+"
+bitwise XOR equals "^="
+assignment "="
+inequality test "!="
+comma ","
+bitwise OR equals "|="
+bitwise OR equals "|="
+times equals "*="
+------------------------------------------------------------------------------------------------------------------------------------
+>test: ./tokenizer 
+>expected result: 
+------------------------------------------------------------------------------------------------------------------------------------
+>test: 
+>expected result: 
+------------------------------------------------------------------------------------------------------------------------------------
+>test: 
+>expected result: 
+------------------------------------------------------------------------------------------------------------------------------------
+>test: 
+>expected result: 
+------------------------------------------------------------------------------------------------------------------------------------
+>test: 
+>expected result: 
+------------------------------------------------------------------------------------------------------------------------------------
+>test: 
+>expected result: 
+------------------------------------------------------------------------------------------------------------------------------------
+>test: 
+>expected result: 
