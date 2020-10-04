@@ -355,7 +355,7 @@ Node* isPunctuation(char * input, Node * head){
 		currentLoc += 2;
 		isCommentLine(input, head);
 	}
-	//Check for quotes; there must be space an ending quote.
+	//Check for quotes; there must be space for an ending quote.
 	else if(currentLoc < strlen(input)-2 && (input[currentLoc] == '\'' || input[currentLoc] == '\"')){
 		currentLoc++;
 		isString(input, head);
