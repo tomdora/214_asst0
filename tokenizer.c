@@ -1,7 +1,17 @@
-#include "tokenizer.h"
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <ctype.h>
 
-int startLoc = 0;			//starting location
-int currentLoc = 0;			//current iteration location
+//struct for the linked list Node
+typedef struct Node{
+	char * data;
+	char * type;
+	struct Node * next;
+} Node;
+
+int startLoc = 0;			//stores starting location
+int currentLoc = 0;			//stores current iteration location
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////// ""Beep boop" beep"
