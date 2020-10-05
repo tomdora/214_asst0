@@ -26,38 +26,65 @@ Node* createNewNode(char * input, char * inputType, Node * head){
 		//printf("Head is null.\n");
 		
 		//Malloc the head for the size of a Node struct, calloc enough space for the string + 1 for null terminator at the end of the string
-		head = malloc(sizeof(Node));
-		head->data = calloc((currentLoc - startLoc + 2), sizeof(char));
-		
-		//Copy data over to the head and set the type
-		strncpy(head->data, input + startLoc, currentLoc-startLoc+1);
-		head->type = inputType;
-		
-		currentLoc++;
-		startLoc = currentLoc;
+		//If malloc returns NULL, program ends and returns NULL
+		if((head = malloc(sizeof(Node))) == NULL){
+			currentLoc = strlen(input);
+			startLoc = currentLoc;
+			
+			return NULL;
+		} else{
+			//calloc space for data; also need to catch if calloc returns NULL
+			if((head->data = calloc((currentLoc - startLoc + 2), sizeof(char))) == NULL){
+				currentLoc = strlen(input);
+				startLoc = currentLoc;
+				
+				return NULL;
+			} else{
+				//Copy data over to the head and set the type
+				strncpy(head->data, input + startLoc, currentLoc-startLoc+1);
+				head->type = inputType;
+				
+				currentLoc++;
+				startLoc = currentLoc;
+			}
+		}
 	}
 	
 	//Else if a head exists, the code will run as normal to create a new node.
 	else{
 		//Malloc the head for the size of a Node struct, calloc enough space for the string + 1 for null terminator at the end of the string
+		//Catch if malloc returns NULL
 		Node * new = malloc(sizeof(Node));
-		new->data = calloc((currentLoc - startLoc + 2), sizeof(char));
-		
-		//Iterate pointer "l" until we get to the end of the list
-		Node * iterator = head;
-		while(iterator->next != NULL){
-			iterator = iterator->next;
+		if(new == NULL){
+			currentLoc = strlen(input);
+			startLoc = currentLoc;
+			
+			return NULL;
+		} else{
+			//calloc space for data; also need to catch if calloc returns NULL
+			if((new->data = calloc((currentLoc - startLoc + 2), sizeof(char))) == NULL){
+				currentLoc = strlen(input);
+				startLoc = currentLoc;
+				
+				return NULL;
+			} else{
+				//Iterate pointer "iterator" until we get to the end of the list
+				Node * iterator = head;
+				while(iterator->next != NULL){
+					iterator = iterator->next;
+				}
+				
+				//Make the last element's pointer point to the address of the new Node struct
+				iterator->next = new;
+				
+				//Copy data over to the head and set the type
+				strncpy(new->data, input + startLoc, currentLoc-startLoc+1);
+				new->type = inputType;
+				
+				currentLoc++;
+				startLoc = currentLoc;
+			}
 		}
-		
-		//Make the last element's pointer point to the address of the new Node struct
-		l->next = new;
-		
-		//Copy data over to the head and set the type
-		strncpy(new->data, input + startLoc, currentLoc-startLoc+1);
-		new->type = inputType;
-		
-		currentLoc++;
-		startLoc = currentLoc;
 	}
 	
 	return head;
@@ -754,7 +781,7 @@ void printTokens(Node * head){
 	if(head == NULL){ printf("Head is null.\n"); }
 	Node * l = head;
 	while(l != NULL){
-		printf("%s \"%s\"\n", l->type, l->data);
+		printf("%s: \"%s\"\n", l->type, l->data);
 		
 		l = l->next;
 	}
