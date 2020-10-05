@@ -44,9 +44,9 @@ Node* createNewNode(char * input, char * inputType, Node * head){
 		new->data = calloc((currentLoc - startLoc + 2), sizeof(char));
 		
 		//Iterate pointer "l" until we get to the end of the list
-		Node * l = head;
-		while(l->next != NULL){
-			l = l->next;
+		Node * iterator = head;
+		while(iterator->next != NULL){
+			iterator = iterator->next;
 		}
 		
 		//Make the last element's pointer point to the address of the new Node struct

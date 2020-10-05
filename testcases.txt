@@ -118,11 +118,11 @@ floating point "3.1"
 floating point "03.1"
 word "x3"
 structure member "."
-octal integer "1"
+decimal integer "1"
 hexadecimal integer "0x3"
 structure member "."
-octal integer "1"
-octal integer "30"
+decimal integer "1"
+decimal integer "30"
 word "x1"
 structure member "."
 word "x"
@@ -224,11 +224,124 @@ Head is null.
 >expected result: 
 There are no strings to tokenize
 ------------------------------------------------------------------------------------------------------------------------------------
+>test: ./tokenizer "foo"
+>expected result: word "foo"
+------------------------------------------------------------------------------------------------------------------------------------
+>test: ./tokenizer "foo."
+>expected result: word "foo"
+structure member "."
+------------------------------------------------------------------------------------------------------------------------------------
+>test: ./tokenizer "foo bar baz //you can't see this"
+>expected result: word "foo"
+word "bar"
+word "baz"
+------------------------------------------------------------------------------------------------------------------------------------
+>test: ./tokenizer "foo bar baz //you can't see this
+but you CAN see this"
+>expected result: word "foo"
+word "bar"
+word "baz"
+word "but"
+word "you"
+word "CAN"
+word "see"
+word "this"
+------------------------------------------------------------------------------------------------------------------------------------
+>test: ./tokenizer "yar har /*fiddle dee dee*/ being a pirate is /*alright to be"
+>expected result: word "yar"
+word "har"
+word "being"
+word "a"
+word "pirate"
+word "is"
+------------------------------------------------------------------------------------------------------------------------------------
+>test: ./tokenizer 'sudo apt install "beep boop this
+is a test"'
+>expected result: word "sudo"
+word "apt"
+word "install"
+string ""beep boop this
+is a test""
+------------------------------------------------------------------------------------------------------------------------------------
+>test: ./tokenizer 'if(3.14159e10 plus 6.85841 - 01234567 * 0123456789 / 9876543210 while 1234567 && 0x1234567890abcdef){ printf("Congratulations!\n");'
+>expected result: if "if"
+left parenthesis "("
+floating point "3.14159e10"
+word "plus"
+floating point "6.85841"
+minus/subtract operator "-"
+octal integer "01234567"
+multiply/dereference operator "*"
+decimal integer "0123456789"
+division "/"
+decimal integer "9876543210"
+while "while"
+decimal integer "1234567"
+logical AND "&&"
+hexadecimal integer "0x1234567890abcdef"
+right parenthesis ")"
+left brace "{"
+word "printf"
+left parenthesis "("
+string ""Congratulations!\n""
+right parenthesis ")"
+punctuation ";"
+------------------------------------------------------------------------------------------------------------------------------------
+>test: ./tokenizer 'sizeofint sizeof int'
+>expected result: word "sizeofint"
+sizeof "sizeof"
+int "int"
+------------------------------------------------------------------------------------------------------------------------------------
+>test: ./tokenizer 'beep
+boop'
+>expected result: word "beep"
+word "boop"
+------------------------------------------------------------------------------------------------------------------------------------
+>test: ./tokenizer '#include <stdio.h>
+#include <string.h>
+
+int main(int argc, char * argv[]){
+	printf("Hello, world!\n");
+	
+	return 0;
+}'
+>expected result: punctuation "#"
+word "include"
+less than test "<"
+word "stdio"
+structure member "."
+word "h"
+greater than test ">"
+punctuation "#"
+word "include"
+less than test "<"
+word "string"
+structure member "."
+word "h"
+greater than test ">"
+int "int"
+word "main"
+left parenthesis "("
+int "int"
+word "argc"
+comma ","
+char "char"
+multiply/dereference operator "*"
+word "argv"
+left bracket "["
+right bracket "]"
+right parenthesis ")"
+left brace "{"
+word "printf"
+left parenthesis "("
+string ""Hello, world!\n""
+right parenthesis ")"
+punctuation ";"
+return "return"
+octal integer "0"
+punctuation ";"
+right brace "}"
+
+------------------------------------------------------------------------------------------------------------------------------------
 >test: ./tokenizer 
->expected result: 
-------------------------------------------------------------------------------------------------------------------------------------
->test: 
->expected result: 
-------------------------------------------------------------------------------------------------------------------------------------
->test: 
 >expected result: 
